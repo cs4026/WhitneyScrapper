@@ -43,7 +43,7 @@ const titleFormat = ( title, year ) => { return { title, year } };
 async function grabArtists(url){
   let d = await getDoc(url)
   
-  let { window } = new JSDOM(d)
+  let { window } = new JSDOM(d);
   
   let arr = Array.from(window.document.querySelectorAll(".list-item"))
 
@@ -61,7 +61,10 @@ async function grabArtists(url){
 
   let ar2 = await Promise.all( arr.map( async ( dom ) =>{
     const url = dom.querySelector("a").href;
-    return getWorks(`https://www.whitney.org/${url}`)
+    const work = await getWorks(`https://www.whitney.org/${url}`);
+    const name =  dom.querySelector("strong").textContent;
+    
+    return artistFactory ( url, name, work );
   }) )
   
   return ar2
@@ -70,5 +73,5 @@ async function grabArtists(url){
 (async ()=> { 
   
   let arr =  await grabArtists("https://www.whitney.org/artists") 
-  console.log(JSON.stringify(arr) )
+  console.log(JSON.stringify(arr, null,2) )
 })()
